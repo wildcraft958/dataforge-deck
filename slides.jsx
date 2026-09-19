@@ -787,7 +787,7 @@ function Slide7() {
 function Slide8() {
   const takeaways = [
     { t: 'More examples is not the fix', d: 'The right examples are. Ten more easy ones buy nothing.' },
-    { t: 'It is not a small model quirk', d: 'We see it at 4.2M parameters. Pathway see it at 150M.' },
+    { t: 'It is not a small model quirk', d: 'We see it at 4.2M parameters. Pathway sees it at 150M.' },
     { t: 'When a model fails, ask this', d: 'Did anything you showed it reach that far?' },
   ];
   return (
