@@ -19,6 +19,13 @@
   }
   section { background: #f6f6f6; }
 
+  /* The closing slide's two links are real anchors, so they need to look and
+     behave like it, including for a keyboard. */
+  .deck-link { transition: background 160ms ease, border-color 160ms ease, transform 160ms ease; }
+  .deck-link:hover { background: #1e6bdd24 !important; border-color: #1e6bdd !important; transform: translateY(-2px); }
+  .deck-link:focus-visible { outline: 3px solid #1e6bdd; outline-offset: 3px; }
+  @media (prefers-reduced-motion: reduce) { .deck-link:hover { transform: none; } }
+
   /* Intra-slide animations. They fire when a slide gets data-deck-active. */
   section:not([data-deck-active]) .anim-el { opacity: 0; }
   section[data-deck-active] .anim-fade { animation: fade-in 0.8s ease-out both; }

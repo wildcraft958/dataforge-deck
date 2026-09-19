@@ -832,17 +832,19 @@ function Slide8() {
             { l: 'Try it', u: 'web-jet-theta-42.vercel.app', full: 'https://web-jet-theta-42.vercel.app' },
             { l: 'Read it', u: 'github.com/wildcraft958/DataForge', full: 'https://github.com/wildcraft958/DataForge' },
           ].map((x) => (
-            <div key={x.l} className="anim-el anim-fade delay-5" style={{
+            <a key={x.l} href={x.full} target="_blank" rel="noopener noreferrer"
+              className="anim-el anim-fade delay-5 deck-link" style={{
               flex: 1, padding: '22px 30px', borderRadius: RADIUS.card,
               background: COLORS.linkTint, border: `1px solid ${COLORS.borderSoft}`,
               display: 'flex', alignItems: 'center', gap: 20,
+              textDecoration: 'none', cursor: 'pointer',
             }}>
               <Icon.Link s={28} c={COLORS.link} />
               <div>
                 <div style={{ fontSize: 19, letterSpacing: '0.08em', textTransform: 'uppercase', color: COLORS.muted, fontWeight: 600 }}>{x.l}</div>
                 <div style={{ fontFamily: FONT_MONO, fontSize: 30, color: COLORS.link, marginTop: 4 }}>{x.u}</div>
               </div>
-            </div>
+            </a>
           ))}
         </div>
 
