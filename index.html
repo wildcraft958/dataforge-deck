@@ -1,0 +1,129 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<title>What BDH Remembers · DataForge 2026 · Pathway Track</title>
+<meta name="viewport" content="width=1920, initial-scale=1" />
+<link rel="icon" href="data:," />
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Funnel+Display:wght@300;400;500;600;700;800&family=Inter:wght@300;400;500;600;700&family=Inconsolata:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  html, body {
+    margin: 0;
+    padding: 0;
+    background: #f6f6f6;
+    font-family: "Open Sauce One", Inter, system-ui, -apple-system, sans-serif;
+    color: #000000;
+    overflow: hidden;
+  }
+  section { background: #f6f6f6; }
+
+  /* Intra-slide animations. They fire when a slide gets data-deck-active. */
+  section:not([data-deck-active]) .anim-el { opacity: 0; }
+  section[data-deck-active] .anim-fade { animation: fade-in 0.8s ease-out both; }
+  section[data-deck-active] .anim-slide-up { animation: slide-up 0.8s cubic-bezier(0.2, 0.8, 0.2, 1) both; }
+  section[data-deck-active] .anim-slide-right { animation: slide-right 0.8s cubic-bezier(0.2, 0.8, 0.2, 1) both; }
+  section[data-deck-active] .anim-grow-h { animation: grow-h 1s cubic-bezier(0.2, 0.8, 0.2, 1) both; transform-origin: left; }
+  section[data-deck-active] .anim-grow-v { animation: grow-v 1s cubic-bezier(0.2, 0.8, 0.2, 1) both; transform-origin: bottom; }
+  section[data-deck-active] .anim-draw { stroke-dasharray: 2000; stroke-dashoffset: 2000; animation: draw-line 2s cubic-bezier(0.2, 0.8, 0.2, 1) both; }
+
+  .delay-1 { animation-delay: 0.1s !important; }
+  .delay-2 { animation-delay: 0.2s !important; }
+  .delay-3 { animation-delay: 0.3s !important; }
+  .delay-4 { animation-delay: 0.4s !important; }
+  .delay-5 { animation-delay: 0.5s !important; }
+  .delay-6 { animation-delay: 0.6s !important; }
+
+  @keyframes fade-in { from { opacity: 0; } to { opacity: 1; } }
+  @keyframes slide-up { from { opacity: 0; transform: translateY(40px); } to { opacity: 1; transform: translateY(0); } }
+  @keyframes slide-right { from { opacity: 0; transform: translateX(-40px); } to { opacity: 1; transform: translateX(0); } }
+  @keyframes grow-h { from { transform: scaleX(0); opacity: 0; } to { transform: scaleX(1); opacity: 1; } }
+  @keyframes grow-v { from { transform: scaleY(0); opacity: 0; } to { transform: scaleY(1); opacity: 1; } }
+  @keyframes draw-line { to { stroke-dashoffset: 0; } }
+
+  /* Slow pulse for the two live demo cue cards. */
+  @keyframes live-pulse {
+    0%   { opacity: 1;   transform: scale(1); }
+    100% { opacity: 0.35; transform: scale(0.82); }
+  }
+  section[data-deck-active] .live-dot {
+    animation: live-pulse 1.4s ease-in-out infinite alternate;
+  }
+</style>
+
+<script type="application/json" id="speaker-notes">
+[
+  "Good afternoon. One sentence, and the rest of the talk earns it. A model can be perfectly capable of solving your problem and still fail it, because of what you put in its memory. This is a deck about a thing called BDH, Pathway's own architecture, and about one variable inside it that decides whether the answer comes out right. The title is What BDH Remembers, and the claim underneath is that capability was never the variable.",
+  "Start with something everybody here has done. You give a chatbot two or three worked examples, then you ask your real question. The model does not retrain when you do that. Nobody changes its weights. What happens instead is that your examples are written into a working memory while they are being read, and then the answer is produced by reading that memory back. That is the whole loop. Examples in, memory updated, answer read out. Pathway say it in one line in their own write-up: examples presented at inference time update the model's memory as they are processed. Hold on to that word, memory, because everything after this slide is about the shape of that memory.",
+  "Here is what Pathway changed. A normal transformer keeps every example in a list, and that list grows with every token you feed it. Longer prompt, longer list, more to store and more to search. BDH does not keep a list. It keeps one grid of synapse strengths, and it is the same size whether you show it one example or a hundred. Every token adds one small pattern on top of what is already in the grid. In words: each token writes one pattern into the grid, and the grid only ever adds. Written down it is this line: S becomes S plus phi of K, outer product with V. The sources are the Dragon Hatchling paper and chapter two of Pathway's own BDH explainer.",
+  "So let us watch that happen instead of talking about it. I am switching to the artifact now, view one. Three things to look for. First, the contribution grid C being built from a single token. Second, C fading onto S, which is the addition I just described. Third, I will click one cell and you will see the number in it, and where the number came from: the value at row i of phi of K, times the value at column j of V. That is the whole write rule, one cell at a time. Everything on that screen is computed in the browser from trained weights while you watch. Nothing is drawn, nothing is a video.",
+  "Now the question the demo sets up. If S is fixed in size, and if the only thing that ever happens to it is addition, then what is in S is decided entirely by what you wrote into it. There is no other source. So here is the question. What happens when what you wrote does not cover what you ask?",
+  "Back to the artifact, view two. Four steps, watch the badge and watch the grid. Step one: complexity three, examples that cover it, the model gets it right. Step two: I drag the slider to eight, the hardest setting, examples still cover it, and it is still right. So it can do hard problems. Step three: I turn coverage off. The examples drop back to easy ones. Same weights, same question, same model, and it fails. Step four: I turn coverage back on and it recovers, immediately, with no retraining and no new weights. Hundred percent to zero and back. Say the important part out loud. Same weights. Same question. Only the examples changed. Nothing about the model's ability moved in either direction.",
+  "That was our four point two million parameter model. Fair question: is this a toy effect? Pathway's own model shows it at production scale. In their report, on ordering tasks of length eight, BDH-CQ scores zero out of twenty four without supporting examples, and twelve out of twenty four with them. Same model. Their ladder experiment shows exactly where the edge sits: perfect at lengths two through five, eighty point six percent at six, thirty three point three at seven, four point two at eight. That is the cliff, in their numbers, not ours. And the reason this matters commercially is on the bottom row: BDH-CQ costs about seven hundredths of a cent per task, against a dollar forty eight and a dollar seventy six for the two comparison systems. I want to be exact about one thing. We did not run BDH-CQ. There are no public weights. Everything in this table is published by Pathway and cited on the slide.",
+  "So, to close. Capability was never the variable. S was. Three things to take home. One: more examples is not the fix. The right examples are. An extra ten easy examples buy you nothing at all. Two: this is not a small model quirk. We see it at four point two million parameters, Pathway see it at a hundred and fifty million. Three: the practical habit. When a model fails a hard case, before you reach for a bigger model or a fine tune, ask whether anything you showed it reached that far. The artifact is live at the link on screen, the code is public, and we are happy to take it apart in questions. Thank you."
+]
+</script>
+</head>
+<body>
+
+<deck-stage width="1920" height="1080">
+  <section data-label="01 Title"><div id="s1"></div></section>
+  <section data-label="02 Examples as Memory"><div id="s2"></div></section>
+  <section data-label="03 What Pathway Changed"><div id="s3"></div></section>
+  <section data-label="04 Demo · The Write"><div id="s4"></div></section>
+  <section data-label="05 The Question"><div id="s5"></div></section>
+  <section data-label="06 Demo · Coverage Cliff"><div id="s6"></div></section>
+  <section data-label="07 Published Evidence"><div id="s7"></div></section>
+  <section data-label="08 Close"><div id="s8"></div></section>
+</deck-stage>
+
+<script src="deck-stage.js"></script>
+<script>
+  /* deck-stage.js is vendored unchanged, so its sidebar text and dark chrome
+     are retuned here from the outside instead of by editing the component. */
+  (function retheme(tries) {
+    var stage = document.querySelector('deck-stage');
+    var root = stage && stage.shadowRoot;
+    if (!root || !root.querySelector('.sidebar-title')) {
+      if ((tries || 0) < 40) setTimeout(function () { retheme((tries || 0) + 1); }, 25);
+      return;
+    }
+    root.querySelector('.sidebar-title').textContent = 'What BDH Remembers';
+    root.querySelector('.sidebar-subtitle').textContent = 'Pathway Track';
+    var s = document.createElement('style');
+    s.textContent = [
+      ':host { background: #ffffff; font-family: "Open Sauce One", Inter, system-ui, sans-serif; }',
+      '.sidebar { background: #ffffff; border-right: 1px solid #e9e9e9; }',
+      '.sidebar-logo { color: #0a85eb; }',
+      '.sidebar-title { color: #000000; font-weight: 600; letter-spacing: -0.01em; }',
+      '.sidebar-subtitle { color: #8c8c8c; }',
+      '.nav-item { color: #8c8c8c; }',
+      '.nav-item:hover { color: #000000; background: #f6f6f6; }',
+      '.nav-item.active { color: #0a85eb; background: #f6f6f6; box-shadow: none; }',
+      '.dot { background: #e9e9e9; }',
+      '.stage { background: #ffffff; }',
+      '.canvas { background: #f6f6f6; border-radius: 28px; box-shadow: 0 30px 80px -34px rgba(0,0,0,0.30); }'
+    ].join('\n');
+    root.appendChild(s);
+  })(0);
+</script>
+<!-- Vendored, not loaded from a CDN: a slow or blocked third-party origin at
+     presentation time would render this deck blank. -->
+<script src="vendor/react.js"></script>
+<script src="vendor/react-dom.js"></script>
+<script src="vendor/babel.js"></script>
+<script type="text/babel" src="slides.jsx"></script>
+<script type="text/babel">
+  const mounts = [
+    ['s1', Slide1], ['s2', Slide2], ['s3', Slide3], ['s4', Slide4],
+    ['s5', Slide5], ['s6', Slide6], ['s7', Slide7], ['s8', Slide8],
+  ];
+  mounts.forEach(([id, C]) => {
+    const el = document.getElementById(id);
+    if (el) ReactDOM.createRoot(el).render(<C />);
+  });
+</script>
+
+</body>
+</html>
